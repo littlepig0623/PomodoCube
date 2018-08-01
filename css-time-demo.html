@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CSS实现倒计时</title>
+  <style>
+    body {
+      text-align: center;
+    }
+
+    .circle {
+      width: 130px;
+      height: 130px;
+      margin: 0 auto;
+      position: relative;
+      text-align: center;
+      line-height: 90px;
+    }
+
+    .track {
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      border: 20px #c00000 solid;
+      box-sizing: border-box;
+    }
+
+    .circle-left {
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      border: 20px #FFF solid;
+      box-sizing: border-box;
+      clip: rect(0 65px 130px 0);  /* 裁剪 */
+    }
+
+    .circle-right {
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      border: 20px #fff solid;
+      box-sizing: border-box;
+      clip: rect(0 65px 130px 0);  /* 裁剪 */
+      transform: rotate(180deg);  /* 旋转 */
+      opacity: 0;
+    }
+
+    .mask {
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      border: 20px #c00000 solid;
+      box-sizing: border-box;
+      clip: rect(0 65px 130px 0);  /* 裁剪 */
+    }
+  </style>
+</head>
+<body>
+  <div class="circle">
+    <div class="track" id="settingTime">0:00</div>
+    <div class="circle-left" id="circle-left"></div>
+    <div class="circle-right" id="circle-right"></div>
+    <div class="mask" id="mask"></div>
+  </div><br>
+  请设置你的学习时间：
+  <input type="number" onBlur="setting(event)" onfocus="reset(event)" id="setting"> 分
+  <script>
+    var left = document.getElementById('circle-left'),
+        right = document.getElementById('circle-right'),
+        mask = document.getElementById('mask');
+    var settingTime = document.getElementById('settingTime'), // setting M
+        settingTimeSeconds = null, // transer S
+        allTime = null, // All Time
+        doneTime = 0, // Complete Time
+        minutes = null,
+        seconds = null,
+        timer = null;
+    var rotate = null;
+
+    function updateTime () {
+      timer = setInterval(function(){
+        if (settingTimeSeconds > 0) {
+          doneTime++;
+          updateProgress();
+          settingTimeSeconds--;
+          minutes = Math.floor(settingTimeSeconds / 60);
+          seconds = settingTimeSeconds - Math.floor(settingTimeSeconds / 60) * 60;
+          seconds = seconds < 10 ? '0' + seconds : seconds;
+          settingTime.innerHTML = minutes + ':' + seconds;
+          if (allTime == doneTime) {
+            reset();
+          }
+        } else {
+          clearInterval(timer);
+        }
+      }, 1000)
+    }
+
+    function updateProgress () {
+      rotate = 360 / allTime
+      if (doneTime <= allTime / 2) {
+        mask.style.opacity = 1;
+        right.style.opacity = 0;
+        left.style.transform = 'rotate(' + doneTime * rotate + 'deg)';
+      } else {
+        mask.style.opacity = 0;
+        right.style.opacity = 1;
+        right.style.transform = 'rotate(' + doneTime * rotate + 'deg)';
+      }
+    }
+
+    function setting (event) {
+      settingTime.innerHTML =  event.target.value + ':00';
+      settingTimeSeconds = event.target.value * 60;
+      allTime = settingTimeSeconds;
+      updateTime();
+    }
+
+    function reset () {
+      clearInterval(timer);
+      mask.style.opacity = 1;
+      right.style.opacity = 0;
+      left.style.transform = 'rotate(' + 0 + 'deg)';
+      right.style.transform = 'rotate(' + 180 + 'deg)';
+      doneTime = 0;
+      settingTime.innerHTML = '0:00';
+      document.getElementById('setting').value = '';
+    }
+  </script>
+</body>
+</html>

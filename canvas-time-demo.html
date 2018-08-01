@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Canvas实现倒计时</title>
+</head>
+<body style="text-align: center;">
+  <canvas id="circle" width="130" height="130"></canvas>
+  <div id="countDown">0:00</div><br>
+  请设置你的学习时间：
+  <input type="number" onBlur="setting(event)" id="setting"> 分
+  <script>
+    var circle = document.getElementById('circle'),
+        circleWidth = circle.width,
+        circleHeight = circle.height,
+        circleContext = circle.getContext('2d');
+    var countDown = document.getElementById('countDown'); // M
+    var countDownSeconds = null, // S
+        doneTime = 0,
+        allTime = null,
+        circleProgress = null,
+        minutes = 0,
+        seconds = 0;
+    var timer = null;
+
+    var circleValue = {
+      x: 65,
+      y: 65,
+      r: 45,
+      beginAngle: 0,
+      endAngle: 2*Math.PI
+    };
+
+    circleContext.lineWidth = 20;
+    circleContext.strokeStyle = "#c00000";
+
+    function setting(event) {
+      clearInterval(timer);
+      countDown.innerHTML = event.target.value + ':00';
+      countDownSeconds = event.target.value * 60;
+      allTime = countDownSeconds;
+      timer = setInterval(function(){
+        if (countDownSeconds > 0) {
+          doneTime++;
+          countDownSeconds--;
+          minutes = Math.floor(countDownSeconds / 60);
+          seconds = countDownSeconds - Math.floor(countDownSeconds / 60) * 60;
+          seconds = seconds < 10 ? '0' + seconds : seconds;
+          countDown.innerHTML = minutes + ':' + seconds;
+          circleProgress +=  360 / allTime
+          drawCircle();
+        } else {
+          clearInterval(timer);
+        }
+      }, 1000)
+    }
+
+    function drawCircle() {
+      circleContext.restore();
+      // reset
+      circleContext.clearRect(0, 0, circleWidth, circleHeight);
+      // setting
+      circleValue.endAngle = circleProgress / 360 * 2 * Math.PI;
+      // creat
+      circleContext.beginPath();
+      circleContext.arc(circleValue.x, circleValue.y, circleValue.r, circleValue.beginAngle, circleValue.endAngle, false);
+      circleContext.stroke();
+      circleContext.save();
+    }
+
+  </script>
+</body>
+</html>

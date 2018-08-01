@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>SVG实现倒计时</title>
+  <style>
+    body {
+      text-align: center;
+    }
+    #circleProcess {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 200px;
+      stroke-dasharray: 255%;
+      stroke-dashoffset: 255%;
+      stroke: #fff;
+      fill: none;
+      -webkit-transform: rotate(-90deg);
+      -moz-transform: rotate(-90deg);
+      -ms-transform: rotate(-90deg);
+      -o-transform: rotate(-90deg);
+      transform: rotate(-90deg);
+    }
+    #circle {
+      stroke: #c00000;
+    }
+  </style>
+</head>
+<body>
+  <svg id="circleProcess" xmlns="http://wwww.w3.org/2000/svg">
+    <circle cx="50%" cy="50%" r="40%" stroke-width="10%" stroke-dashoffset="0%" id="circle"></circle>
+  </svg><br>
+  <div id="countDown">0:00</div><br>
+
+  请设置你的学习时间：<input type="number" onBlur="setting(event)" onfocus="reset(event)" id="setting"> 分
+  <script>
+    var circle = document.getElementById("circle");
+    var countDown = document.getElementById('countDown'), // setting M
+        countDownSeconds = null, // transfer S
+        allTime = null,
+        doneTime = 0,
+        minutes = null,
+        seconds = null;
+    var timer = null;
+    var piece = null;
+
+    function updateTime () {
+      timer = setInterval(function(){
+        if (countDownSeconds > 0) {
+          doneTime++;
+          countDownSeconds--;
+          // Countdown
+          minutes = Math.floor(countDownSeconds / 60);
+          seconds = countDownSeconds - Math.floor(countDownSeconds / 60) * 60;
+          seconds = seconds < 10 ? '0' + seconds : seconds;
+          countDown.innerHTML = minutes + ':' + seconds;
+          // Circle
+          piece = 255 / allTime
+          circle.setAttribute("stroke-dashoffset", -(piece * doneTime) + "%");
+          if (doneTime == allTime) {
+            reset();
+          }
+        } else {
+          clearInterval(timer);
+        }
+      }, 1000)
+    }
+
+    function setting (event) {
+      countDown.innerHTML =  event.target.value + ':00';
+      countDownSeconds = event.target.value * 60;
+      allTime = countDownSeconds;
+      updateTime();
+    }
+
+    function reset() {
+      clearInterval(timer);
+      circle.setAttribute("stroke-dashoffset", 0 + "%");
+      doneTime = 0;
+      countDown.innerHTML = '0:00';
+      document.getElementById('setting').value = '';
+    }
+  </script>
+</body>
+</html>
